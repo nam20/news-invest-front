@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -22,6 +22,8 @@ import GetAppTwoToneIcon from '@mui/icons-material/GetAppOutlined';
 import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyOutlined';
 import PictureAsPdfTwoToneIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveOutlined';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchResource } from '../../store/apiActions';
 
 // ===========================|| DASHBOARD DEFAULT - EARNING CARD ||=========================== //
 
@@ -29,6 +31,23 @@ const EarningCard = ({ isLoading }) => {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const dispatch = useDispatch();
+  const currentMarketPrices = useSelector((state) => state.api.currentMarketPrices);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_APP_API_URL;
+
+    dispatch(fetchResource('currentMarketPrices', {
+      url: `${apiUrl}/api/current-market-prices`,
+      method: 'GET',
+    }));
+  }, [dispatch]);
+
+  let currentVooPrice = 0;
+
+  if (currentMarketPrices.data) {
+    currentVooPrice = currentMarketPrices.data.content.find((data) => data.symbol === 'VOO').price;
+  }
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +161,9 @@ const EarningCard = ({ isLoading }) => {
               <Grid item>
                 <Grid container alignItems="center">
                   <Grid item>
-                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>$500.00</Typography>
+                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
+                      ${currentVooPrice}
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <Avatar
@@ -166,7 +187,7 @@ const EarningCard = ({ isLoading }) => {
                     color: 'secondary.200'
                   }}
                 >
-                  Total Earning
+                  Current VOO Price
                 </Typography>
               </Grid>
             </Grid>

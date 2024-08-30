@@ -7,6 +7,8 @@ const initialState = {
   portfolio: { loading: false, data: null, error: null },
   asset: { loading: false, data: null, error: null },
   trade: { loading: false, data: null, error: null },
+  news: { loading: false, data: null, error: null },
+  currentMarketPrices: { loading: false, data: null, error: null },
 };
 
 const apiReducer = (state = initialState, action) => {
