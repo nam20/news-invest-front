@@ -6,51 +6,43 @@ import Grid from '@mui/material/Grid';
 // project imports
 import EarningCard from './EarningCard';
 import PopularCard from './PopularCard';
-import TotalOrderLineChartCard from './TotalOrderLineChartCard';
-import TotalIncomeDarkCard from './TotalIncomeDarkCard';
-import TotalIncomeLightCard from './TotalIncomeLightCard';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
 
 import { gridSpacing } from 'store/constant';
 
 // assets
-import StorefrontTwoToneIcon from '@mui/icons-material/StorefrontTwoTone';
+import { fetchResource } from '../../store/apiActions';
+import { useDispatch } from 'react-redux';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 
 const Dashboard = () => {
   const [isLoading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_APP_API_URL;
+
+    dispatch(fetchResource('currentMarketPrices', {
+      url: `${apiUrl}/api/current-market-prices`,
+      method: 'GET',
+    }));
+
     setLoading(false);
-  }, []);
+  }, [dispatch]);
 
   return (
     <Grid container spacing={gridSpacing}>
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
-          <Grid item lg={4} md={6} sm={6} xs={12}>
-            <EarningCard isLoading={isLoading} />
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <EarningCard isLoading={isLoading} symbol="VOO" />
           </Grid>
-          <Grid item lg={4} md={6} sm={6} xs={12}>
-            <TotalOrderLineChartCard isLoading={isLoading} />
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <EarningCard isLoading={isLoading} symbol="QQQ" />
           </Grid>
-          <Grid item lg={4} md={12} sm={12} xs={12}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalIncomeDarkCard isLoading={isLoading} />
-              </Grid>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalIncomeLightCard
-                  {...{
-                    isLoading: isLoading,
-                    total: 203,
-                    label: 'Total Income',
-                    icon: <StorefrontTwoToneIcon fontSize="inherit" />
-                  }}
-                />
-              </Grid>
-            </Grid>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <EarningCard isLoading={isLoading} symbol="bitcoin" />
           </Grid>
         </Grid>
       </Grid>

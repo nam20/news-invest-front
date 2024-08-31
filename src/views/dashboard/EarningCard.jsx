@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -22,31 +22,22 @@ import GetAppTwoToneIcon from '@mui/icons-material/GetAppOutlined';
 import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyOutlined';
 import PictureAsPdfTwoToneIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveOutlined';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchResource } from '../../store/apiActions';
+import { useSelector } from 'react-redux';
 
 // ===========================|| DASHBOARD DEFAULT - EARNING CARD ||=========================== //
 
-const EarningCard = ({ isLoading }) => {
+const EarningCard = ({ isLoading, symbol }) => {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const dispatch = useDispatch();
-  const currentMarketPrices = useSelector((state) => state.api.currentMarketPrices);
+  const currentMarketPricesData = useSelector((state) => state.api.currentMarketPrices).data;
 
-  useEffect(() => {
-    const apiUrl = import.meta.env.VITE_APP_API_URL;
+  let currentPrice = 0;
 
-    dispatch(fetchResource('currentMarketPrices', {
-      url: `${apiUrl}/api/current-market-prices`,
-      method: 'GET',
-    }));
-  }, [dispatch]);
-
-  let currentVooPrice = 0;
-
-  if (currentMarketPrices.data) {
-    currentVooPrice = currentMarketPrices.data.content.find((data) => data.symbol === 'VOO').price;
+  if (currentMarketPricesData) {
+    currentPrice = currentMarketPricesData.content
+      .find((data) => data.symbol === symbol).price
+      .toFixed(2);
   }
 
   const handleClick = (event) => {
@@ -162,7 +153,7 @@ const EarningCard = ({ isLoading }) => {
                 <Grid container alignItems="center">
                   <Grid item>
                     <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                      ${currentVooPrice}
+                      ${currentPrice}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -187,7 +178,7 @@ const EarningCard = ({ isLoading }) => {
                     color: 'secondary.200'
                   }}
                 >
-                  Current VOO Price
+                  Current {symbol} Price
                 </Typography>
               </Grid>
             </Grid>
@@ -199,7 +190,8 @@ const EarningCard = ({ isLoading }) => {
 };
 
 EarningCard.propTypes = {
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  symbol: PropTypes.string,
 };
 
 export default EarningCard;
