@@ -2,10 +2,10 @@
 
 const chartData = {
   height: 480,
-  type: 'bar',
+  type: 'line',
   options: {
     chart: {
-      id: 'bar-chart',
+      id: 'line-chart',
       stacked: true,
       toolbar: {
         show: true

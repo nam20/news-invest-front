@@ -9,6 +9,9 @@ const initialState = {
   trade: { loading: false, data: null, error: null },
   news: { loading: false, data: null, error: null },
   currentMarketPrices: { loading: false, data: null, error: null },
+  dailyVooPrices: { loading: false, data: null, error: null },
+  dailyQqqPrices: { loading: false, data: null, error: null },
+  dailyBitcoinPrices: { loading: false, data: null, error: null },
 };
 
 const apiReducer = (state = initialState, action) => {

@@ -28,6 +28,11 @@ const Dashboard = () => {
       method: 'GET',
     }));
 
+    dispatch(fetchResource('dailyVooPrices', {
+      url: `${apiUrl}/api/daily-market-prices/STOCK/VOO`,
+      method: 'GET',
+    }));
+
     setLoading(false);
   }, [dispatch]);
 

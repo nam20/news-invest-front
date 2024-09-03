@@ -19,6 +19,7 @@ import { gridSpacing } from 'store/constant';
 
 // chart data
 import chartData from './chart-data/total-growth-bar-chart';
+import { useSelector } from 'react-redux';
 
 const status = [
   {
@@ -50,7 +51,23 @@ const TotalGrowthBarChart = ({ isLoading }) => {
   const secondaryMain = theme.palette.secondary.main;
   const secondaryLight = theme.palette.secondary.light;
 
+  const dailyVooPrices = useSelector((state) => state.api.dailyVooPrices).data;
+
+  if (dailyVooPrices) {
+    chartData.series = [
+      {
+        name: 'VOO',
+        data: dailyVooPrices.content.map((data) => data.price)
+      }
+    ];
+  }
+
   React.useEffect(() => {
+
+    if (!dailyVooPrices) {
+      return;
+    }
+
     const newChartData = {
       ...chartData.options,
       colors: [primary200, primaryDark, secondaryMain, secondaryLight],
@@ -59,7 +76,9 @@ const TotalGrowthBarChart = ({ isLoading }) => {
           style: {
             colors: [primary, primary, primary, primary, primary, primary, primary, primary, primary, primary, primary, primary]
           }
-        }
+        },
+        categories: dailyVooPrices.content.map((data) => data.date),
+        type: 'category'
       },
       yaxis: {
         labels: {
@@ -75,9 +94,9 @@ const TotalGrowthBarChart = ({ isLoading }) => {
 
     // do not load chart when loading
     if (!isLoading) {
-      ApexCharts.exec(`bar-chart`, 'updateOptions', newChartData);
+      ApexCharts.exec(`line-chart`, 'updateOptions', newChartData);
     }
-  }, [primary200, primaryDark, secondaryMain, secondaryLight, primary, divider, isLoading, grey500]);
+  }, [primary200, primaryDark, secondaryMain, secondaryLight, primary, divider, isLoading, grey500, dailyVooPrices]);
 
   return (
     <>
