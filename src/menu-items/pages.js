@@ -36,6 +36,14 @@ const pages = {
           target: true
         }
       ]
+    },
+    {
+      id: 'post-list',
+      title: 'Post',
+      type: 'item',
+      url: '/pages/post-list',
+      icon: icons.IconDashboard,
+      breadcrumbs: false
     }
   ]
 };
