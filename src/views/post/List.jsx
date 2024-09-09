@@ -1,6 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchResource } from '../../store/apiActions';
 
 const columns = [
@@ -14,6 +14,13 @@ const columns = [
 ];
 
 const PostList = () => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 20,
+  });
+  const postState = useSelector((state) => state.api.post);
+  const posts = postState.data;
+  const isLoading = postState.loading;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -22,11 +29,12 @@ const PostList = () => {
     dispatch(fetchResource('post', {
       url: `${apiUrl}/api/posts`,
       method: 'GET',
+      params: {
+        page: paginationModel.page,
+      }
     }));
 
-  }, [dispatch]);
-
-  const posts = useSelector((state) => state.api.post).data;
+  }, [dispatch, paginationModel]);
 
   const rows = posts ? posts.content.map((post) => ({
     id: post.id,
@@ -38,8 +46,26 @@ const PostList = () => {
     updatedAt: post.updatedAt
   })) : [];
 
+  const rowCountRef = useRef(posts?.pagination?.totalElements || 0);
+
+  const rowCount = useMemo(() => {
+    if (posts?.pagination?.totalElements !== undefined) {
+      rowCountRef.current = posts.pagination.totalElements;
+    }
+    return rowCountRef.current;
+  }, [posts?.pagination?.totalElements]);
+
   return (
-    <DataGrid rows={rows} columns={columns} />
+    <DataGrid
+      rows={rows}
+      columns={columns}
+      rowCount={rowCount}
+      loading={isLoading}
+      pageSizeOptions={[20]}
+      paginationModel={paginationModel}
+      paginationMode="server"
+      onPaginationModelChange={setPaginationModel}
+    />
   );
 };
 
