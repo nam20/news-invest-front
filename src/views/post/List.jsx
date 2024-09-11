@@ -2,6 +2,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchResource } from '../../store/apiActions';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import { Link } from 'react-router-dom';
 
 const columns = [
   { field: 'id', headerName: 'id' },
@@ -56,16 +60,25 @@ const PostList = () => {
   }, [posts?.pagination?.totalElements]);
 
   return (
-    <DataGrid
-      rows={rows}
-      columns={columns}
-      rowCount={rowCount}
-      loading={isLoading}
-      pageSizeOptions={[20]}
-      paginationModel={paginationModel}
-      paginationMode="server"
-      onPaginationModelChange={setPaginationModel}
-    />
+    <Box>
+      <Grid container justifyContent="flex-end" mb={2}>
+        <Grid item>
+          <Button variant="contained" component={Link} to="/pages/post-create">
+            게시글 작성
+          </Button>
+        </Grid>
+      </Grid>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        rowCount={rowCount}
+        loading={isLoading}
+        pageSizeOptions={[20]}
+        paginationModel={paginationModel}
+        paginationMode="server"
+        onPaginationModelChange={setPaginationModel}
+      />
+    </Box>
   );
 };
 
