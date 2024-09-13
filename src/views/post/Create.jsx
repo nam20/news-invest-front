@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 const PostCreate = () => {
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
+  const [category, setCategory] = useState();
 
   function createPost() {
 
@@ -19,6 +20,14 @@ const PostCreate = () => {
         variant="outlined"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        fullWidth
+        label="카테고리"
+        variant="outlined"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
         sx={{ mb: 2 }}
       />
       <TextField
