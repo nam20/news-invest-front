@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 
-const postCreate = () => {
+const PostCreate = () => {
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
 
@@ -42,4 +42,4 @@ const postCreate = () => {
   );
 }
 
-export default postCreate;
+export default PostCreate;
