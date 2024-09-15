@@ -18,6 +18,7 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const PostList = Loadable(lazy(() => import('views/post/List')));
 const PostCreate = Loadable(lazy(() => import('views/post/Create')));
+const PostDetail = Loadable(lazy(() => import('views/post/Detail')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -75,6 +76,10 @@ const MainRoutes = {
         {
           path: 'post-create',
           element: <PostCreate />
+        },
+        {
+          path: 'post-detail/:id',
+          element: <PostDetail />
         },
       ]
     },

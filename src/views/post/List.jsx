@@ -15,6 +15,19 @@ const columns = [
   { field: 'category', headerName: 'category' },
   { field: 'createdAt', headerName: 'createdAt' },
   { field: 'updatedAt', headerName: 'updatedAt' },
+  {
+    field: 'actions',
+    headerName: '상세 보기',
+    renderCell: (params) => (
+      <Button
+        variant="contained"
+        component={Link}
+        to={`/pages/post-detail/${params.id}`}
+      >
+        상세 보기
+      </Button>
+    ),
+  }
 ];
 
 const PostList = () => {
