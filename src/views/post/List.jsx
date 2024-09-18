@@ -1,11 +1,10 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { fetchResource } from '../../store/apiActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const columns = [
   { field: 'id', headerName: 'id' },
@@ -35,23 +34,24 @@ const PostList = () => {
     page: 0,
     pageSize: 20,
   });
-  const postState = useSelector((state) => state.api.post);
-  const posts = postState.data;
-  const isLoading = postState.loading;
-  const dispatch = useDispatch();
+  const [posts, setPosts] = useState();
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_APP_API_URL;
 
-    dispatch(fetchResource('post', {
-      url: `${apiUrl}/api/posts`,
-      method: 'GET',
-      params: {
-        page: paginationModel.page,
-      }
-    }));
+    const fetchPosts = async () => {
+      setLoading(true);
 
-  }, [dispatch, paginationModel]);
+      const { data } = await axios.get(`${apiUrl}/api/posts?page=${paginationModel.page}`);
+
+      setPosts(data);
+      setLoading(false);
+    }
+
+    fetchPosts();
+
+  }, [paginationModel]);
 
   const rows = posts ? posts.content.map((post) => ({
     id: post.id,

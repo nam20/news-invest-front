@@ -2,7 +2,6 @@ import { API_REQUEST, API_REQUEST_FAILURE, API_REQUEST_SUCCESS } from './actionT
 
 const initialState = {
   user: { loading: false, data: null, error: null },
-  post: { loading: false, data: null, error: null },
   comment: { loading: false, data: null, error: null },
   portfolio: { loading: false, data: null, error: null },
   asset: { loading: false, data: null, error: null },
