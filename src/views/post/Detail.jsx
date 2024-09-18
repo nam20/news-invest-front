@@ -13,28 +13,11 @@ const PostDetail = () => {
 
     const fetchPost = async () => {
       try {
-        const { data } = await axios.get(`${apiUrl}/api/posts/${id}`);
+        const postResponse = await axios.get(`${apiUrl}/api/posts/${id}`);
+        const commentsResponse = await axios.get(`${apiUrl}/api/comments/post/${id}`);
 
-        const postData = {
-          title: data.title,
-          content: data.content,
-          category: data.category,
-          createdAt: data.createdAt,
-        };
-
-        const commentData = data.comments.map(comment => {
-          return {
-            id: comment.id,
-            userId: comment.userId,
-            content: comment.content,
-            createdAt: comment.createdAt,
-            parentCommentId: comment.parentCommentId,
-            depth: comment.depth,
-          }
-        })
-
-        setPost(postData);
-        setComments(commentData);
+        setPost(postResponse.data);
+        setComments(commentsResponse.data.content);
 
       } catch (error) {
         console.error(error);
