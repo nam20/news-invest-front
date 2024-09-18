@@ -42,6 +42,10 @@ const PostDetail = () => {
         {post.category}
       </Typography>
 
+      <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
+        {post.userName}
+      </Typography>
+
       <Typography variant="body1" sx={{ mb: 4 }}>
         {post.content}
       </Typography>
@@ -59,7 +63,7 @@ const PostDetail = () => {
               <ListItemText
                 primary={
                   <>
-                    {comment.userId}
+                    {comment.userName}
                     <Typography
                       component="span"
                       variant="body2"

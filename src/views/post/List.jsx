@@ -9,6 +9,7 @@ import axios from 'axios';
 const columns = [
   { field: 'id', headerName: 'id' },
   { field: 'userId', headerName: 'userId' },
+  { field: 'userName', headerName: 'userName' },
   { field: 'title', headerName: 'title' },
   { field: 'content', headerName: 'content' },
   { field: 'category', headerName: 'category' },
@@ -56,6 +57,7 @@ const PostList = () => {
   const rows = posts ? posts.content.map((post) => ({
     id: post.id,
     userId: post.userId,
+    userName: post.userName,
     title: post.title,
     content: post.content,
     category: post.category,
