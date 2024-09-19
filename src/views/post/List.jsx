@@ -55,17 +55,7 @@ const PostList = () => {
 
   }, [paginationModel]);
 
-  const rows = posts ? posts.content.map((post) => ({
-    id: post.id,
-    userId: post.userId,
-    userName: post.userName,
-    title: post.title,
-    content: post.content,
-    category: post.category,
-    commentCount: post.commentCount,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt
-  })) : [];
+  const rows = posts?.content ?? [];
 
   const rowCountRef = useRef(posts?.pagination?.totalElements || 0);
 
