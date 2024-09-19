@@ -13,6 +13,7 @@ const columns = [
   { field: 'title', headerName: 'title' },
   { field: 'content', headerName: 'content' },
   { field: 'category', headerName: 'category' },
+  { field: 'commentCount', headerName: 'commentCount' },
   { field: 'createdAt', headerName: 'createdAt' },
   { field: 'updatedAt', headerName: 'updatedAt' },
   {
@@ -61,6 +62,7 @@ const PostList = () => {
     title: post.title,
     content: post.content,
     category: post.category,
+    commentCount: post.commentCount,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt
   })) : [];
