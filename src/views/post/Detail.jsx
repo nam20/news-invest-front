@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, List, ListItem, Divider, ListItemText, Button } from '@mui/material';
+import { Box, Typography, List, ListItem, Divider, ListItemText, Button, Pagination } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
@@ -9,15 +9,19 @@ const PostDetail = () => {
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const { id } = useParams();
 
+  const [pagination, setPagination] = useState({
+    totalPages: 0,
+    totalElements: 0,
+    currentPage: 1,
+    pageSize: 20,
+  });
+
   useEffect(() => {
 
     const fetchPost = async () => {
       try {
-        const postResponse = await axios.get(`${apiUrl}/api/posts/${id}`);
-        const commentsResponse = await axios.get(`${apiUrl}/api/comments/post/${id}`);
-
-        setPost(postResponse.data);
-        setComments(commentsResponse.data.content);
+        const { data } = await axios.get(`${apiUrl}/api/posts/${id}`);
+        setPost(data);
 
       } catch (error) {
         console.error(error);
@@ -27,6 +31,35 @@ const PostDetail = () => {
     fetchPost();
 
   }, []);
+
+  useEffect(() => {
+
+    const fetchComments = async () => {
+      try {
+        const { data } = await axios.get(`${apiUrl}/api/comments/post/${id}?page=${pagination.currentPage - 1}`);
+
+        setComments(data.content);
+        setPagination((prev) => ({
+          ...prev,
+          totalPages: data.pagination.totalPages,
+          totalElements: data.pagination.totalElements,
+        }));
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchComments();
+
+  }, [ pagination.currentPage])
+
+  const handlePageChange = (event, page) => {
+    setPagination((prev) => ({
+      ...prev,
+      currentPage: page,
+    }));
+  }
 
   return (
     <Box sx={{ p: 3, maxWidth: '800px', margin: '0 auto' }}>
@@ -81,6 +114,14 @@ const PostDetail = () => {
           </React.Fragment>
         ))}
       </List>
+
+      <Pagination
+        count={pagination.totalPages}
+        page={pagination.currentPage}
+        onChange={handlePageChange}
+        color="primary"
+        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+      />
 
       <Button variant="contained" sx={{ mt: 2 }}>
         댓글 작성
