@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -33,6 +33,7 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
+import { USER } from 'store/actionTypes';
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
@@ -42,6 +43,8 @@ const AuthRegister = ({ ...others }) => {
   const customization = useSelector((state) => state.customization);
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
@@ -137,10 +140,21 @@ const AuthRegister = ({ ...others }) => {
           try {
             const apiUrl = import.meta.env.VITE_APP_API_URL;
 
-            const response = await axios.post(`${apiUrl}/api/auth/register`, values);
+            const response = await axios.post(`${apiUrl}/api/auth/register`,
+              values, { withCredentials: true });
+
+            dispatch({ type: USER, payload: response.data });
+
+            navigate('/dashboard/default');
 
           } catch (error) {
-            console.error(error);
+            if (error.response.status === 409) {
+              setErrors({ submit: error.response.data.message });
+            } else if (error.response.status === 400) {
+              setErrors({ submit: 'Validation Failed' });
+            } else {
+              setErrors({ submit: 'Something went wrong. Please try again' });
+            }
           } finally {
             setSubmitting(false);
           }

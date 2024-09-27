@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -32,6 +32,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
 import axios from 'axios';
+import { USER } from 'store/actionTypes';
+import { useNavigate } from 'react-router-dom';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -40,6 +42,8 @@ const AuthLogin = ({ ...others }) => {
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
   const [checked, setChecked] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const googleHandler = async () => {
     console.error('Login');
@@ -129,10 +133,21 @@ const AuthLogin = ({ ...others }) => {
           try {
             const apiUrl = import.meta.env.VITE_APP_API_URL;
 
-            const response = await axios.post(`${apiUrl}/api/auth/login`, values);
+            const response = await axios.post(`${apiUrl}/api/auth/login`,
+              values, { withCredentials: true });
+
+            dispatch({ type: USER, payload: response.data });
+
+            navigate('/dashboard/default');
 
           } catch (error) {
-            console.error(error);
+            if (error.response.status === 401) {
+              setErrors({ submit: 'Incorrect username or password' });
+            } else if (error.response.status === 400) {
+              setErrors({ submit: 'Validation Failed' });
+            } else {
+              setErrors({ submit: 'Something went wrong. Please try again' });
+            }
           } finally {
             setSubmitting(false);
           }
