@@ -3,8 +3,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const columns = [
   { field: 'id', headerName: 'id' },
@@ -38,6 +39,16 @@ const PostList = () => {
   });
   const [posts, setPosts] = useState();
   const [isLoading, setLoading] = useState(true);
+  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
+  const handlePostCreate = () => {
+    if (user.data) {
+      navigate('/pages/post-create');
+    } else {
+      navigate('/pages/login/login3');
+    }
+  }
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -70,7 +81,7 @@ const PostList = () => {
     <Box>
       <Grid container justifyContent="flex-end" mb={2}>
         <Grid item>
-          <Button variant="contained" component={Link} to="/pages/post-create">
+          <Button variant="contained" onClick={handlePostCreate}>
             게시글 작성
           </Button>
         </Grid>
