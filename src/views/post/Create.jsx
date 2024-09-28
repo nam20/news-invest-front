@@ -2,14 +2,33 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import Button from '@mui/material/Button';
+import axios from 'axios';
+import FormHelperText from '@mui/material/FormHelperText';
+import { useNavigate } from 'react-router-dom';
 
 const PostCreate = () => {
-  const [title, setTitle] = useState();
-  const [content, setContent] = useState();
-  const [category, setCategory] = useState();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
-  function createPost() {
+  async function handleSubmit() {
+    const apiUrl = import.meta.env.VITE_APP_API_URL;
 
+    try {
+      setLoading(true);
+      await axios.post(`${apiUrl}/api/posts`,
+        { title, content, category }, { withCredentials: true });
+
+      navigate('/pages/post-list');
+
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -43,10 +62,16 @@ const PostCreate = () => {
       <Button
         variant="contained"
         color="primary"
-        onClick={createPost}
+        onClick={handleSubmit}
+        disabled={loading}
       >
         작성 완료
       </Button>
+      {errorMessage && (
+        <Box sx={{ mt: 3 }}>
+          <FormHelperText error>{errorMessage}</FormHelperText>
+        </Box>
+      )}
     </Box>
   );
 }
