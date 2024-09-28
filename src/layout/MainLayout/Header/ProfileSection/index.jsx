@@ -36,6 +36,7 @@ import User1 from 'assets/images/users/user-round.svg';
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-react';
+import axios from 'axios';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -54,7 +55,13 @@ const ProfileSection = () => {
    * */
   const anchorRef = useRef(null);
   const handleLogout = async () => {
-    console.log('Logout');
+    const apiUrl = import.meta.env.VITE_APP_API_URL;
+
+    try {
+      await axios.post(`${apiUrl}/api/auth/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleClose = (event) => {
