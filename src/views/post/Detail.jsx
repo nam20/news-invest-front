@@ -2,12 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, List, ListItem, Divider, ListItemText, Button, Pagination } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
+import { useSelector } from 'react-redux';
 
 const PostDetail = () => {
   const [post, setPost] = useState({});
   const [comments, setComments] = useState([]);
   const apiUrl = import.meta.env.VITE_APP_API_URL;
   const { id } = useParams();
+  const isLoggedIn = useSelector((state) => state.user.data != null);
+
+  const [commentContent, setCommentContent] = useState("");
+  const [replyContent, setReplyContent] = useState({});
+  const [replyingTo, setReplyingTo] = useState([]);
 
   const [pagination, setPagination] = useState({
     totalPages: 0,
@@ -15,6 +22,74 @@ const PostDetail = () => {
     currentPage: 1,
     pageSize: 20,
   });
+
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`${apiUrl}/api/comments/post/${id}?page=${pagination.currentPage - 1}`);
+
+      setComments(data.content);
+      setPagination((prev) => ({
+        ...prev,
+        totalPages: data.pagination.totalPages,
+        totalElements: data.pagination.totalElements,
+      }));
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleCommentChange = (e) => setCommentContent(e.target.value);
+  const handleReplyChange = (commentId, content) => {
+    setReplyContent((prev) => ({
+      ...prev,
+      [commentId]: content,
+    }));
+  };
+
+  const handleReplyClick = (commentId) => {
+    if (replyingTo.includes(commentId)) {
+      setReplyingTo((prev) => prev.filter((id) => id !== commentId));
+    } else {
+      setReplyingTo((prev) => [...prev, commentId]);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    try {
+      await commentSubmit({ content: commentContent });
+      setCommentContent("");
+      fetchComments();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReplySubmit = async (commentId) => {
+    try {
+      await commentSubmit({
+        content: replyContent[commentId],
+        parentCommentId: commentId,
+      });
+      setReplyingTo((prev) => prev.filter((id) => id !== commentId));
+      setReplyContent((prev) => ({
+        ...prev,
+        [commentId]: "",
+      }));
+      fetchComments();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const commentSubmit = async ({ content, parentCommentId } ) => {
+    try {
+      const response = await axios.post(`${apiUrl}/api/comments`,
+        { postId: id, content, parentCommentId }, { withCredentials: true });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
 
@@ -33,25 +108,7 @@ const PostDetail = () => {
   }, []);
 
   useEffect(() => {
-
-    const fetchComments = async () => {
-      try {
-        const { data } = await axios.get(`${apiUrl}/api/comments/post/${id}?page=${pagination.currentPage - 1}`);
-
-        setComments(data.content);
-        setPagination((prev) => ({
-          ...prev,
-          totalPages: data.pagination.totalPages,
-          totalElements: data.pagination.totalElements,
-        }));
-
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     fetchComments();
-
   }, [ pagination.currentPage])
 
   const handlePageChange = (event, page) => {
@@ -107,7 +164,42 @@ const PostDetail = () => {
                     </Typography>
                   </>
                 }
-                secondary={comment.content}
+                secondary={
+                  <>
+                    {comment.content}
+                    {isLoggedIn && (
+                      <Button
+                        size="small"
+                        onClick={() => handleReplyClick(comment.id)}
+                        sx={{ mt: 1 }}
+                      >
+                        답글
+                      </Button>
+                    )}
+                    {replyingTo.includes(comment.id) && (
+                      <Box sx={{ mt: 2 }}>
+                        <TextField
+                          label="답글 작성"
+                          variant="outlined"
+                          fullWidth
+                          multiline
+                          rows={2}
+                          value={replyContent[comment.id] || ""}
+                          onChange={(e) =>
+                            handleReplyChange(comment.id, e.target.value)
+                          }
+                          sx={{ mb: 1 }}
+                        />
+                        <Button
+                          variant="contained"
+                          onClick={() => handleReplySubmit(comment.id)}
+                        >
+                          답글 작성 완료
+                        </Button>
+                      </Box>
+                    )}
+                  </>
+                }
               />
             </ListItem>
             <Divider component="div" />
@@ -123,9 +215,32 @@ const PostDetail = () => {
         sx={{ mt: 2, display: "flex", justifyContent: "center" }}
       />
 
-      <Button variant="contained" sx={{ mt: 2 }}>
-        댓글 작성
-      </Button>
+      <Box sx={{ mt: 2 }}>
+        {isLoggedIn ? (
+          <>
+            <TextField
+              label="댓글 작성"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={3}
+              value={commentContent}
+              onChange={handleCommentChange}
+            />
+            <Button
+              variant="contained"
+              sx={{ mt: 2 }}
+              onClick={handleCommentSubmit}
+            >
+              댓글 작성 완료
+            </Button>
+          </>
+        ) : (
+          <Typography color="textSecondary">
+            로그인 후 댓글을 작성할 수 있습니다.
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 };
